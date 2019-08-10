@@ -171,7 +171,6 @@ def get_pdfObj_contents(pdfObj,**kwargs):
                             img = Image.open(jpgData)
                             if mode == "CMYK":
                                 # case of CMYK invert all channel
-
                                 # imgData = list(img.tobytes())
                                 # invData = [(255 - val) & 0xff for val in imgData]
                                 # data = struct.pack("{}B".format(len(invData)), *invData)
@@ -190,7 +189,7 @@ def get_pdfObj_contents(pdfObj,**kwargs):
                             img.write(data)
                             img.close()
                             print('save to:',outFileName + ".jp2")
-                        
+
                         # case of JBIG2
                         elif len(leftFilters) == 1 and leftFilters[0] == '/JBIG2Decode':
                             img = open(outFileName + ".jbig2", "wb")
@@ -222,11 +221,11 @@ def main(sourceName,**kwargs):
     outputFolder = kwargs.get('outputFolder',None)
     os.makedirs(outputFolder,exist_ok=True)
     fileBase = os.path.splitext(os.path.basename(sourceName))[0]
-    
+
     with open(sourceName, "rb") as fp:
         pdfObj = PyPDF2.PdfFileReader(fp,strict=False)
         get_pdfObj_contents(pdfObj,fileBase=fileBase,**kwargs)
-    
+
     print("Completed.")
 
 # main(sourceName = 'aa.pdf', outputFolder = ".\\Temp",num_pages = 1,targetPage = None)

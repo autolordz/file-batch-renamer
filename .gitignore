@@ -107,5 +107,7 @@ venv.bak/
 *.zip
 *.exe
 *.txt
+*.jar
 tmp/
 exe-win7-tmp/
+README1.md

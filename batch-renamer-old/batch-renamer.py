@@ -26,21 +26,16 @@ Created on Mon Nov 26 11:56:28 2018
 """
 
 #%%
-
 import zhon.hanzi,zhon.cedict
 import os,re,io,glob,shutil,string,platform
 import itertools as it
-
-import extrectImage
 from pdfminer.high_level import extract_text_to_fp
-
 import pytesseract
-from PIL import Image 
-
+from PIL import Image
 from docx import Document
 from pptx import Presentation
 from xlrd import open_workbook
-from win32com.client import Dispatch # for office 97-2003 
+from win32com.client import Dispatch # for office 97-2003
 
 #%%
 def parse_subpath(path,file):
@@ -83,12 +78,12 @@ def clean_txt_func(x,**kwargs):
     return xx
 
 
-#%% rename office,officex 
-    
+#%% rename office,officex
+
 def rename_officex(file,**kwargs):
     '''rename only judgment doc files'''
     suffix = os.path.splitext(file)[1]
-    
+
     if suffix == '.docx':
         try:
             doc = Document(file)
@@ -99,7 +94,7 @@ def rename_officex(file,**kwargs):
             return x
         except Exception as e:
             print('>>> 读取 %s 失败,可能格式不正确 => %s'%(file,e))
-    
+
     if suffix == '.pptx':
         try:
             prs = Presentation(file)
@@ -117,7 +112,7 @@ def rename_officex(file,**kwargs):
             return x
         except Exception as e:
             print('>>> 读取 %s 失败,可能格式不正确 => %s'%(file,e))
-    
+
     if suffix in ['.xlsx','.xls']:
         try:
             exl = open_workbook(file)
@@ -149,12 +144,12 @@ def get_txt_text(file,**kwargs):
 def rename_office(file,**kwargs):
     name = os.path.splitext(file)[0]
     suffix = os.path.splitext(file)[1]
-    
+
     if suffix == '.txt':
         x = get_txt_text(file,**kwargs)
         print('>>> 找到 %s 内容: %s'%(file,x))
         os_rename(file,x)
-        
+
     if suffix == '.doc':
         file_txt = name + '_doc.txt'
         word = Dispatch("Word.Application")
@@ -165,7 +160,7 @@ def rename_office(file,**kwargs):
         print('>>> 找到 %s 内容: %s'%(file,x))
         os_rename(file,x)
         os.remove(file_txt)
-            
+
     if suffix == '.ppt':
         txt = []
         try:
@@ -186,7 +181,7 @@ def rename_office(file,**kwargs):
         x = clean_txt_func(','.join(txt),**kwargs)
         print('>>> 找到 %s 内容: %s'%(file,x))
         os_rename(file,x)
-    
+
     if suffix == '.xls':
         try:
             app = Dispatch("Excel.Application")
@@ -206,7 +201,7 @@ def rename_office(file,**kwargs):
         x = clean_txt_func(','.join(txt),**kwargs)
         print('>>> 找到 %s 内容: %s'%(file,x))
         os_rename(file,x)
-        
+
     return True
 
 #%% rename image
@@ -220,10 +215,10 @@ def get_image_txt(file,**kwargs):
         print('image size :',img.size)
         img = img.crop((0,0,img.width,img.height/img_h))
         print('image size 2:',img.size)
-        
+
         pytesseract.pytesseract.tesseract_cmd = 'c:\\Program Files (x86)\\Tesseract-OCR\\tesseract.exe' \
-        if '64bit' in platform.architecture() else 'c:\\Program Files\\Tesseract-OCR\\tesseract.exe' 
-        
+        if '64bit' in platform.architecture() else 'c:\\Program Files\\Tesseract-OCR\\tesseract.exe'
+
         x = pytesseract.image_to_string(img,lang='chi_sim') # eng
         x = re.sub(r'\s+',',',x)
         print('>>> 解析 %s \n 内容: %s'%(file,x))
@@ -256,7 +251,7 @@ def get_pdf_txt(ifile,**kwargs):
         if len(txt) < 10:
             print('====decode images===')
             extrectImage.main(sourceName=ifile,outputFolder=odir,**kwargs)
-            subext = [parse_subpath(odir,x) for x in 
+            subext = [parse_subpath(odir,x) for x in
                       ['*.png','*.jpg','*.jpeg','*.bmp','*.tif']]
             images = list(it.chain(*(glob.iglob(e) for e in subext)))
             print(images)
